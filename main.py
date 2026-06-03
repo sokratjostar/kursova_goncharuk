@@ -2,27 +2,31 @@ import streamlit as st
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
+import os  # Додано імпорт os для перевірки наявності файлу
 
 st.set_page_config(page_title="Моделювання DoS-атаки", layout="wide")
 
 st.title("Моделювання DoS-атаки на вузли мережі")
 st.write("Програма моделює перевантаження вузлів мережі та аналізує наслідки DoS-атаки.")
-df = None
-default_file_path = "network.csv"
 
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-elif os.path.exists(default_file_path):
-    df = pd.read_csv(default_file_path)
-
+# 1. Спершу ініціалізуємо віджет для файлу (змінна має існувати до перевірки)
 uploaded_file = st.file_uploader("Завантажте CSV-файл із ребрами мережі", type=["csv"])
 
 attack_power = st.slider("Інтенсивність атакуючого трафіку", 10, 1000, 300)
 node_capacity = st.slider("Гранична пропускна здатність вузла", 50, 1000, 250)
 
+df = None
+default_file_path = "network.csv"
+
+# 2. Перевіряємо, звідки брати дані: з завантаженого файлу чи файлу за замовчуванням
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
+elif os.path.exists(default_file_path):
+    df = pd.read_csv(default_file_path)
+    st.info(f"Використовуються дані за замовчуванням з файлу {default_file_path}")
 
+# 3. Основний блок: якщо дані успішно завантажено, будуємо мережу
+if df is not None:
     if df.shape[1] < 2:
         st.error("CSV-файл повинен містити мінімум два стовпці: початковий та кінцевий вузол.")
     else:
@@ -99,6 +103,5 @@ if uploaded_file is not None:
                 "Це свідчить про зниження доступності мережі та можливу відмову "
                 "в обслуговуванні для частини користувачів."
             )
-
 else:
     st.info("Завантажте CSV-файл, щоб розпочати моделювання.")
