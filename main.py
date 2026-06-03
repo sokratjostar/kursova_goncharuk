@@ -7,6 +7,13 @@ st.set_page_config(page_title="Моделювання DoS-атаки", layout="w
 
 st.title("Моделювання DoS-атаки на вузли мережі")
 st.write("Програма моделює перевантаження вузлів мережі та аналізує наслідки DoS-атаки.")
+df = None
+default_file_path = "network.csv"
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+elif os.path.exists(default_file_path):
+    df = pd.read_csv(default_file_path)
 
 uploaded_file = st.file_uploader("Завантажте CSV-файл із ребрами мережі", type=["csv"])
 
